@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { VideoModel } from "./models/VideoModel";
 import { UserModel } from "./models/UserModel";
+import { socket } from './socket';
 
 export type AppProps = {
     videos?: VideoModel[],
@@ -14,7 +15,10 @@ type ShareResult = {
 export interface AppContextProps extends AppProps
 {
     children?: any,
+    isConnected?: boolean,
+    events?: VideoModel[],
     getVideos?: () => Promise<VideoModel[]>,
+    removeEvent?: (v: VideoModel) => void,
     share?: (videoUrl: string) => Promise<ShareResult>,
     join?: (user: UserModel) => void,
     logout?: () => void,
@@ -22,7 +26,7 @@ export interface AppContextProps extends AppProps
 
 export const AppContext = createContext<AppContextProps>({});
 
-const _SERVER_URL = "http://localhost:5050";
+const _SERVER_URL = "http://localhost:8088";
 
 export const AppProvider = ({ children }: AppContextProps) =>
 {
@@ -32,6 +36,45 @@ export const AppProvider = ({ children }: AppContextProps) =>
         videos: [],
         loading: false,
     });
+
+    const [isConnected, setIsConnected] = useState(socket.connected);
+    const [events, setEvents] = useState<VideoModel[]>([]);
+
+    useEffect(() =>
+    {
+        function onConnect()
+        {
+            setIsConnected(true);
+            console.log('Socket connected');
+        }
+
+        function onDisconnect()
+        {
+            setIsConnected(false);
+            console.log('Socket disconnected');
+        }
+
+        function onFooEvent(value: VideoModel)
+        {
+            const { currentUser } = state;
+            if (value?.sharedBy !== currentUser)
+            {
+                setEvents(previous => [...previous, value]);
+                console.log('New video', value, currentUser);
+            }
+        }
+
+        socket.on('connect', onConnect);
+        socket.on('disconnect', onDisconnect);
+        socket.on('new-video', onFooEvent);
+
+        return () =>
+        {
+            socket.off('connect', onConnect);
+            socket.off('disconnect', onDisconnect);
+            socket.off('new-video', onFooEvent);
+        };
+    }, []);
 
     useEffect(() =>
     {
@@ -130,9 +173,17 @@ export const AppProvider = ({ children }: AppContextProps) =>
         }
     }
 
+    const removeEvent = (v: VideoModel) =>
+    {
+        setEvents([...events.filter(e => e.id !== v.id)]);
+    }
+
     return (
         <AppContext.Provider value={{
             ...state,
+            isConnected,
+            events,
+            removeEvent,
             getVideos,
             share,
             join,

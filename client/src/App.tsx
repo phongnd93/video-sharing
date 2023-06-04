@@ -6,16 +6,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home';
 import Share from './pages/Share';
 import { AppContext, AppContextProps } from './AppProvider';
-import { Box, Container, SwipeableDrawer } from '@mui/material';
+import { Alert, Box, Container, Snackbar, Stack, SwipeableDrawer, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormJoin } from './components/FormJoin';
 import { UserModel } from './models/UserModel';
 import { FormLoggedIn } from './components/FormLoggedIn';
 import { ProtectedRoute } from './ProtectedRoute';
+import { VideoModel } from './models/VideoModel';
 
 function App()
 {
-  const { currentUser, join, logout } = useContext<AppContextProps>(AppContext);
+  const { currentUser, events, removeEvent, join, logout } = useContext<AppContextProps>(AppContext);
   const router = createBrowserRouter([
     {
       path: "/",
@@ -39,10 +40,15 @@ function App()
     }
   }
 
+  const handleCloseSnakeBar = (v: VideoModel) =>
+  {
+    removeEvent && removeEvent(v);
+  };
+
   const handleShareVideoClick = () =>
   {
 
-  };
+  }
 
   const handleLogout = () =>
   {
@@ -82,6 +88,16 @@ function App()
           }
         </SwipeableDrawer>
       </Box>
+      {events !== undefined && events.length > 0 && events.map((e: VideoModel) => (
+        <Snackbar key={e.id} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} open={(events?.length > 0 && events.findIndex(v => v.id === e.id) > -1)} autoHideDuration={6000} onClose={() => { handleCloseSnakeBar(e); }}>
+          <Alert onClose={() => { handleCloseSnakeBar(e); }} severity="success" sx={{ width: '100%' }}>
+            <Stack direction={'column'}>
+              <Typography component={"h6"}>{`${e.sharedBy} has just shared new video`}</Typography>
+              <Typography component={"h5"}>{e.title}</Typography>
+            </Stack>
+          </Alert>
+        </Snackbar>
+      ))}
     </Container>
   );
 }

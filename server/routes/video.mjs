@@ -70,9 +70,18 @@ router.post("/", async (req, res) =>
                 const videoInfo = await getYoutubeVideoInfo(videoId);
                 if (videoInfo)
                 {
-                    let result = await collection.insertOne({ ...videoInfo, ...{ id: videoId, url: urlVideo, sharedBy: currentUser.email } });
+                    const doc = { ...videoInfo, ...{ id: videoId, url: urlVideo, sharedBy: currentUser.email } };
+                    let result = await collection.insertOne(doc);
                     if (!result) res.send({ value: null, message: 'Error' }).status(400);
-                    else res.send({ value: result }).status(400);
+                    else
+                    {
+                        if (req.io)
+                        {
+                            req.io.sockets.emit('new-video', doc);
+                        }
+
+                        res.send({ value: result }).status(200);
+                    }
                 }
             }
         }
