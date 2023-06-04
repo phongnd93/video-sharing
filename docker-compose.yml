@@ -1,0 +1,48 @@
+# The version of the docker-compose.
+version: "3.8"
+# Telling docker-compose to build the client and server images and run them in containers.
+services:
+  client:
+    # Telling docker-compose to build the client image using the Dockerfile in the client directory.
+    build: ./client
+    # Giving the container a name.
+    container_name: video-sharing-client
+    # Mapping the port 3000 on the host machine to the port 3000 on the container.
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+  server:
+    # Telling docker-compose to build the client image using the Dockerfile in the server directory.
+    build: ./server
+    container_name: video-sharing-server
+    ports:
+      - "5050:5050"
+    # ADD THE CONFIGURATION FROM THIS POINT to build the MongoDB service
+    environment:
+      - PORT=5050
+      # Username for the mongo database
+      - MONGO_INITDB_ROOT_USERNAME=mern
+      # Password for the mongo database
+      - MONGO_INITDB_ROOT_PASSWORD=merndocker
+      # Youtube api key to read Youtube video information
+      - YOUTUBE_API_KEY=AIzaSyCUEMfgzeVCGc1Hl4XpyuY5ugO2FSwFYB0
+    # Enables the mongo service to start before the node service
+    depends_on:
+      - mongo
+  # Name of mongo service
+  mongo:
+    # Official mongo image from docker.hub
+    image: mongo
+    environment:
+      # Username for the mongo database
+      - MONGO_INITDB_ROOT_USERNAME=mern
+      # Password for the mongo database
+      - MONGO_INITDB_ROOT_PASSWORD=merndocker
+    ports:
+      - "8080:27017"
+    volumes:
+      # <nameOfVolume>:<directorInDocker>
+      - mongoDB:/data/db
+volumes:
+   mongoDB:

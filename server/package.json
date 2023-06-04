@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon -L server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,5 +17,8 @@
     "express-session": "^1.17.3",
     "md5": "^2.3.0",
     "mongodb": "^5.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

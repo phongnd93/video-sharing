@@ -10,7 +10,6 @@ import Tooltip from '@mui/material/Tooltip';
 import HomeIcon from '@mui/icons-material/Home';
 import { FormJoin } from './FormJoin';
 import { UserModel } from '../models/UserModel';
-import { Stack, Button } from '@mui/material';
 import { FormLoggedIn } from './FormLoggedIn';
 
 export type NavBarProps = {
@@ -24,7 +23,7 @@ export type NavBarProps = {
 const NavBar = ({ currentUser, onToggleDrawer, onJoinClick, onShareVideoClick, onLogoutClick }: NavBarProps) =>
 {
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ maxHeight: 'fit-content' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1, alignItems: 'center' }}>

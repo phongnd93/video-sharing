@@ -1,5 +1,4 @@
 import express from "express";
-import session from "express-session";
 import db from "../db/conn.mjs";
 import Utils from "../db/utils.mjs";
 
@@ -47,11 +46,9 @@ router.post("/", async (req, res) =>
 {
     try
     {
-        Utils.getCurrentSession(req);
-        const currentSession = req.session;
-        if (currentSession?.currentUser)
+        const currentUser = Utils.getCurrentUser(req);
+        if (currentUser)
         {
-            const currentUser = currentSession.currentUser;
             const urlVideo = req.body.url;
             const url = new URL(urlVideo);
             let videoId = '';

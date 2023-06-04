@@ -1,13 +1,15 @@
 import { MongoClient } from "mongodb";
 
-const connectionString = process.env.MONGO_URI || "";
+const connectionString = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongo:27017`;
 
 const client = new MongoClient(connectionString);
 
 let conn;
-try {
+try
+{
   conn = await client.connect();
-} catch(e) {
+} catch (e)
+{
   console.error(e);
 }
 

@@ -7,12 +7,12 @@ const router = express.Router();
 const _COLLECTION_USER = 'user';
 
 // User join section
-router.post("/", async (req, res, next) =>
+router.get("/", async (req, res, next) =>
 {
-    if (req.session?.currentUser)
+    const currentUser = Utils.getCurrentUser(req);
+    if (currentUser)
     {
-        const user = req.session.currentUser;
-        res.send({ value: user.email }).status(200);
+        res.send({ value: currentUser.email }).status(200);
     } else res.send({ value: null, message: "Not found" }).status(404);
 });
 
@@ -119,17 +119,8 @@ router.get('/logout', async (req, res) =>
 {
     try
     {
-        Utils.getCurrentSession(req);
-        req.session.destroy((err) =>
-        {
-            if (err)
-            {
-                res.send({ value: null, message: err.message }).status(400);
-            } else
-            {
-                res.send({ value: true }).status(200);
-            }
-        });
+        req.sessionStore.destroy();
+        res.send({ value: true}).status(200);
     } catch (error)
     {
         res.send({ value: null, message: error.message }).status(400);
