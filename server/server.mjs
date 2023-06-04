@@ -11,10 +11,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use(session({
-  secret: 'video-sharing',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+    secret: 'video-sharing',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
 }));
 
 app.use("/user", users);
@@ -23,5 +23,5 @@ app.use('/video', videos);
 // start the Express server
 app.listen(PORT, () =>
 {
-  console.log(`Server is running on port: ${PORT}`);
+    console.log(`Server is running on port: ${PORT}`);
 });

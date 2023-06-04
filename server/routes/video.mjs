@@ -1,6 +1,7 @@
 import express from "express";
+import session from "express-session";
 import db from "../db/conn.mjs";
-import { ObjectId } from "mongodb";
+import Utils from "../db/utils.mjs";
 
 const router = express.Router();
 const _COLLECTION_VIDEO = 'video';
@@ -46,33 +47,39 @@ router.post("/", async (req, res) =>
 {
     try
     {
-        const currentUser = req.session.currentUser;
-        const urlVideo = req.body.url;
-        const url = new URL(urlVideo);
-        let videoId = '';
-        //Url is detail mode
-        if (url.searchParams.size !== 0 && url.pathname === '/watch')
+        Utils.getCurrentSession(req);
+        const currentSession = req.session;
+        if (currentSession?.currentUser)
         {
-            videoId = url.searchParams.get('v');
-        }
-
-        //Url is short mode 
-        if (url.searchParams.size > 0 && url.pathname !== '/watch')
-        {
-            videoId = url.pathname.slice(1);
-        }
-
-        const collection = await db.collection(_COLLECTION_VIDEO);
-        if (videoId?.length)
-        {
-            const videoInfo = await getYoutubeVideoInfo(videoId);
-            if (videoInfo)
+            const currentUser = currentSession.currentUser;
+            const urlVideo = req.body.url;
+            const url = new URL(urlVideo);
+            let videoId = '';
+            //Url is detail mode
+            if (url.searchParams.size !== 0 && url.pathname === '/watch')
             {
-                let result = await collection.insertOne({ ...videoInfo, ...{ id: videoId, url: urlVideo, sharedBy: currentUser.email } });
-                if (!result) res.send({ value: null, message: 'Error' }).status(400);
-                else res.send({ value: result }).status(400);
+                videoId = url.searchParams.get('v');
+            }
+
+            //Url is short mode 
+            if (url.searchParams.size > 0 && url.pathname !== '/watch')
+            {
+                videoId = url.pathname.slice(1);
+            }
+
+            const collection = await db.collection(_COLLECTION_VIDEO);
+            if (videoId?.length)
+            {
+                const videoInfo = await getYoutubeVideoInfo(videoId);
+                if (videoInfo)
+                {
+                    let result = await collection.insertOne({ ...videoInfo, ...{ id: videoId, url: urlVideo, sharedBy: currentUser.email } });
+                    if (!result) res.send({ value: null, message: 'Error' }).status(400);
+                    else res.send({ value: result }).status(400);
+                }
             }
         }
+        else res.send({ value: null, redirect: '/', message: error.message }).status(400);
     } catch (error)
     {
         res.send({ value: null, message: error.message }).status(400);

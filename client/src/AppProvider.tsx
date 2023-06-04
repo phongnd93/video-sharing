@@ -5,6 +5,7 @@ import { UserModel } from "./models/UserModel";
 export type AppProps = {
     videos?: VideoModel[],
     currentUser?: string,
+    loading?: boolean
 }
 type ShareResult = {
     value?: VideoModel,
@@ -28,22 +29,42 @@ export const AppProvider = ({ children }: AppContextProps) =>
 
     const [state, setState] = useState<AppProps>({
         currentUser: undefined,
-        videos: []
+        videos: [],
+        loading: false,
     });
 
     useEffect(() =>
     {
-        const { videos } = state;
-        if ((!videos || !videos.length) && getVideos)
+        const { videos, currentUser } = state;
+        let isInit = false;
+        if ((!videos || !videos.length) && !currentUser && !isInit)
         {
-            getVideos().then((result) =>
-            {
-                const u = localStorage.getItem('currentUser');
-                setState({ ...state, ...{ currentUser: u || '', videos: result || [] } });
-            });
+            init();
+        }
+        return () =>
+        {
+            isInit = true;
         }
     }, []);
 
+    const init = async () =>
+    {
+        setState({ ...state, ...{ loading: true } });
+        const currentUser = await getCurrentUser();
+        const videos = await getVideos();
+        setState({ ...state, ...{ currentUser: currentUser || '', videos: videos || [], loading: false } });
+    }
+
+    const getCurrentUser = async () =>
+    {
+        const res = await fetch(`${_SERVER_URL}/user`);
+        const result = await res.json();
+        if (result && result.value)
+        {
+            return result.value;
+        }
+        return null;
+    }
     const getVideos = async () =>
     {
         const res = await fetch(`${_SERVER_URL}/video`);
@@ -98,10 +119,15 @@ export const AppProvider = ({ children }: AppContextProps) =>
         } else console.log('Join : ', result.message);
     }
 
-    const logout = () =>
+    const logout = async () =>
     {
-        setState({ ...state, ...{ currentUser: undefined } });
-        localStorage.removeItem('currentUser');
+        const res = await fetch(`${_SERVER_URL}/user/logout`);
+        const result = await res.json();
+        if (result)
+        {
+            setState({ ...state, ...{ currentUser: undefined } });
+            localStorage.removeItem('currentUser');
+        }
     }
 
     return (
