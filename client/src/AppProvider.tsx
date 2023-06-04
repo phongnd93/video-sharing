@@ -26,7 +26,7 @@ export interface AppContextProps extends AppProps
 
 export const AppContext = createContext<AppContextProps>({});
 
-const _SERVER_URL = "http://localhost:8088";
+const _SERVER_URL = "http://localhost:5050";
 
 export const AppProvider = ({ children }: AppContextProps) =>
 {

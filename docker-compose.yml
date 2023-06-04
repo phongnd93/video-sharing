@@ -18,6 +18,7 @@ services:
     container_name: video-sharing-server
     ports:
       - "5050:5050"
+      - "4000:4000"
     # ADD THE CONFIGURATION FROM THIS POINT to build the MongoDB service
     environment:
       - PORT=5050

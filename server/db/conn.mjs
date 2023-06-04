@@ -1,7 +1,6 @@
 import { MongoClient } from "mongodb";
 
-// const connectionString = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongo:27017`;
-const connectionString = `mongodb://127.0.0.1:27017`;
+const connectionString = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongo:27017`;
 const client = new MongoClient(connectionString);
 
 let conn;

@@ -11,6 +11,7 @@ COPY . /server
 
 # Specifies the port the node app will be running on
 EXPOSE 5050
+EXPOSE 4000
 
 # Runs "node server.js" after the above step is completed
 CMD ["npm", "run", "dev"]
