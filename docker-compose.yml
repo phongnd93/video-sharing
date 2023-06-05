@@ -9,7 +9,7 @@ services:
     container_name: video-sharing-client
     # Mapping the port 3000 on the host machine to the port 3000 on the container.
     ports:
-      - "3000:3000"
+      - "3001:3000"
     # ADD THE CONFIGURATION FROM THIS POINT
     environment:
       # Config server url connection

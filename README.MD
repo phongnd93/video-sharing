@@ -10,9 +10,17 @@ This is video sharing website where people can share each others their favorites
 - Clone this repository to your machine
 - In server, creates `.env` file and includes this below code : 
 ```
+PORT=<Your server port>
+SOCKET_PORT=<Your socket port>
 MONGO_INITDB_ROOT_USERNAME=<Your mongo db username>
 MONGO_INITDB_ROOT_PASSWORD=<Your mongo db password>
 YOUTUBE_API_KEY=<Your google api key>
+```
+- In client, creates `.env` file and includes this below code : 
+```
+REACT_APP_SERVER_URL=<Your server url | `http://localhost` if running on your local machine> 
+REACT_APP_SERVER_PORT=<Your server port as above>
+REACT_APP_SOCKET_PORT=<Your socket port as above>
 ```
 ## 4. Database Setup
 - Create a mongodb server in your localhost, create a db name `video-sharing` with username and password above
