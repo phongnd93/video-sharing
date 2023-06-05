@@ -9,6 +9,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 const PORT = process.env.PORT || 8088;
+const SOCKET_PORT = process.env.SOCKET_PORT || 4000;
 const app = express();
 
 app.use(cors());
@@ -47,9 +48,9 @@ app.use('/video', videos);
 
 // start the Express server
 // app.listen(3000);
-server.listen(4000, () =>
+server.listen(SOCKET_PORT, () =>
 {
-    console.log(`Socket is running on port: ${4000}`);
+    console.log(`Socket is running on port: ${SOCKET_PORT}`);
 });
 
 

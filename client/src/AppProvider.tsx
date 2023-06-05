@@ -26,11 +26,10 @@ export interface AppContextProps extends AppProps
 
 export const AppContext = createContext<AppContextProps>({});
 
-const _SERVER_URL = "http://localhost:5050";
+const _SERVER_URL = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}`;
 
 export const AppProvider = ({ children }: AppContextProps) =>
 {
-
     const [state, setState] = useState<AppProps>({
         currentUser: undefined,
         videos: [],

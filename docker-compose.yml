@@ -10,6 +10,14 @@ services:
     # Mapping the port 3000 on the host machine to the port 3000 on the container.
     ports:
       - "3000:3000"
+    # ADD THE CONFIGURATION FROM THIS POINT
+    environment:
+      # Config server url connection
+      - REACT_APP_SERVER_URL=http://10.242.0.5
+      # Config server port connection
+      - REACT_APP_SERVER_PORT=5050
+      # Config socket port connection
+      - REACT_APP_SOCKET_PORT=4001
     depends_on:
       - server
   server:
@@ -21,6 +29,9 @@ services:
       - "4000:4000"
     # ADD THE CONFIGURATION FROM THIS POINT to build the MongoDB service
     environment:
+      # Socket port config
+      - SOCKET_PORT=4000
+      # Expose port
       - PORT=5050
       # Username for the mongo database
       - MONGO_INITDB_ROOT_USERNAME=mern
